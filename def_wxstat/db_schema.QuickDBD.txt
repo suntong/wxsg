@@ -1,0 +1,68 @@
+# WX user
+user as u
+---
+user_id PK int IDENTITY
+# user name
+# WX 昵称（不是群昵称）
+name string INDEX
+
+# WX 群
+wx_group as g
+---
+group_id PK int IDENTITY
+# Group name
+name string INDEX
+# Group comment
+comment NULL string
+# Day range for reporting of being active
+active_period int default=15
+# Day range for reporting of being sleep
+quiet_period int default=30
+# Number of active users to report
+active_num int default=10
+# Number of quiet users to report
+quiet_num int default=10
+
+activity_type as at
+# Activities definition
+---
+activity_type_id PK int IDENTITY
+name string
+# scale factor for the activity_type
+scale int
+# 贡献	发言总字数
+# 爱心	发言后又撤回重新修改的总字数
+# 分享	除纯文字以外，任何其他的分享
+# 热闹	贴表情包图
+# .
+# .
+# .
+# .
+# .
+# .
+# .
+comment NULL string
+
+activity_log
+# Activities journal
+---
+activity_log_id PK int IDENTITY
+user_id int FK >- u.user_id
+group_id int FK >- g.group_id
+activity_type_id int FK >- at.activity_type_id
+activity_date dateTime
+stat int
+
+# user statistic (View structure)
+user_stat_
+---
+user_id int FK >- u.user_id
+group_id int FK >- g.group_id
+# 贡献指数	发言总字数累计
+word_count int
+# 爱心指数	发言后又撤回重新修改的总字数累计
+correction_count int
+# 分享指数	除纯文字以外，任何其他分享的次数累计
+share_count int
+# 热闹指数	贴表情包图的次数累计（表情包不统计在分享指数之中）
+meme_count int

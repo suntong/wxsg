@@ -2,11 +2,12 @@ package main
 
 import (
 	"fmt"
+
 	"github.com/eatMoreApple/openwechat"
 )
 
 func main() {
-	bot := openwechat.DefaultBot()
+	bot := openwechat.DefaultBot(openwechat.Desktop)
 
 	// 注册消息处理函数
 	bot.MessageHandler = func(msg *openwechat.Message) {

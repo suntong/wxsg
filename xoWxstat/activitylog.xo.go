@@ -5,8 +5,7 @@ package xoWxstat
 
 import (
 	"errors"
-
-	"github.com/xo/xoutil"
+	"time"
 )
 
 // ActivityLog represents a row from 'activity_log'.
@@ -15,7 +14,7 @@ type ActivityLog struct {
 	UserID         int           `json:"user_id"`          // user_id
 	GroupID        int           `json:"group_id"`         // group_id
 	ActivityTypeID int           `json:"activity_type_id"` // activity_type_id
-	ActivityDate   xoutil.SqTime `json:"activity_date"`    // activity_date
+	ActivityDate   time.Time `json:"activity_date"`    // activity_date
 	Stat           int           `json:"stat"`             // stat
 
 	// xo fields

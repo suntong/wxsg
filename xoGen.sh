@@ -20,7 +20,7 @@ for i in def_*/config; do
   source $i/config
 
   MODELS=$(expr $i : 'def_\(.*\)$')
-  MODELS=xo${MODELS^}
+  MODELS=xo${MODELS}
   
   mkdir -p $MODELS
   rm -f $MODELS/*.xo.go
@@ -38,16 +38,23 @@ for i in def_*/config; do
   echo -e "\nsqlite3 $DB < $i/db_schema.sql"
   sqlite3 $EXTRA "$DB" < $i/db_schema.sql
 
-  echo -e "\nxo $DB -o $MODELS"
-  $XOBIN $EXTRA "$DB" -o $MODELS
+  
+  if [ -f $i/db_data.sql ]; then
+    (set -ex;
+     usql -f $i/db_data.sql $DB
+    )
+  fi
+
+  echo -e "\nxo schema $DB -o $MODELS"
+  $XOBIN $EXTRA schema "$DB" -o $MODELS
 
   for cq in $i/db_custom-*.sql; do
     cqn=$(expr $cq : '.*/db_custom-\(.*\)\.sql$')
-    echo -e "\nxo $DB -o $MODELS < $cq"
-    $XOBIN $EXTRA \
+    echo -e "\nxo query $DB -o $MODELS < $cq"
+    $XOBIN query $EXTRA \
 	   -o $MODELS \
-	   -N -M -B -T $cqn \
-	   --query-type-comment="Custom defined search query $cqn" \
+	   -M -B -2 -T $cqn \
+	   --type-comment="Custom defined search query $cqn" \
 	   "$DB" < $cq
   done
 

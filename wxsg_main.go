@@ -19,8 +19,11 @@ func main() {
 		}
 	}
 
-	// 登陆
-	if err := bot.Login(); err != nil {
+	// 创建热存储容器对象
+	reloadStorage := openwechat.NewJsonFileHotReloadStorage("storage.json")
+
+	// 执行热登陆
+	if err := bot.HotLogin(reloadStorage); err != nil {
 		fmt.Println(err)
 		return
 	}

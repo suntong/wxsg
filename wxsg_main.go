@@ -1,3 +1,9 @@
+////////////////////////////////////////////////////////////////////////////
+// Program: wxsg
+// Purpose: WX Statistic Genie
+// Authors: Tong Sun (c) 2020-2021, All rights reserved
+////////////////////////////////////////////////////////////////////////////
+
 package main
 
 import (
@@ -7,7 +13,33 @@ import (
 	"github.com/eatMoreApple/openwechat"
 )
 
+////////////////////////////////////////////////////////////////////////////
+// Constant and data type/structure definitions
+
+const desc = "WX Statistic Genie"
+
+////////////////////////////////////////////////////////////////////////////
+// Global variables definitions
+
+var (
+	progname = "wxsg"
+	version  = "0.1.0"
+	date     = "2021-07-15"
+)
+
+////////////////////////////////////////////////////////////////////////////
+// Function definitions
+
+//==========================================================================
+// Main
+
 func main() {
+	logIf(0, desc,
+		"Version", version,
+		"Built-on", date,
+	)
+	logIf(0, "Copyright (C) 2020-2021, Tong Sun", "License", "MIT")
+
 	bot := openwechat.DefaultBot(openwechat.Desktop)
 	// 注册登陆二维码回调
 	bot.UUIDCallback = ConsoleQrCode
@@ -23,30 +55,33 @@ func main() {
 	reloadStorage := openwechat.NewJsonFileHotReloadStorage("storage.json")
 
 	// 执行热登陆
-	if err := bot.HotLogin(reloadStorage); err != nil {
-		fmt.Println(err)
-		return
-	}
+	err := bot.HotLogin(reloadStorage)
+	abortOn("Can't start bot", err)
 
 	// 获取登陆的用户
 	self, err := bot.GetCurrentUser()
-	if err != nil {
-		fmt.Println(err)
-		return
-	}
+	abortOn("Can't get self", err)
+	logIf(0, "logged-on", "user", self)
 
 	// 获取所有的好友
 	friends, err := self.Friends()
-	fmt.Println(friends, err)
+	abortOn("Can't get friends", err)
+	logIf(0, "friends")
+	fmt.Println("\t", friends)
 
 	// 获取所有的群组
 	groups, err := self.Groups()
-	fmt.Println(groups, err)
+	abortOn("Can't get groups", err)
+	logIf(0, "groups")
+	fmt.Println("\t", groups)
 
 	// 阻塞主goroutine, 知道发生异常或者用户主动退出
 	bot.Block()
 }
 
+
+//==========================================================================
+// support functions
 
 func ConsoleQrCode(uuid string) {
 	q, _ := qrcode.New("https://login.weixin.qq.com/l/"+uuid, qrcode.Low)

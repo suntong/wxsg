@@ -8,7 +8,9 @@ package main
 
 import (
 	"fmt"
+	"strconv"
 
+	"github.com/caarlos0/env"
 	"github.com/skip2/go-qrcode"
 	"github.com/eatMoreApple/openwechat"
 )
@@ -18,6 +20,10 @@ import (
 
 const desc = "WX Statistic Genie"
 
+type envConfig struct {
+	LogLevel      string `env:"WXSG_LOG"`
+}
+
 ////////////////////////////////////////////////////////////////////////////
 // Global variables definitions
 
@@ -25,6 +31,9 @@ var (
 	progname = "wxsg"
 	version  = "0.1.0"
 	date     = "2021-07-15"
+
+	e   envConfig
+
 )
 
 ////////////////////////////////////////////////////////////////////////////
@@ -34,6 +43,15 @@ var (
 // Main
 
 func main() {
+	// == Config handling
+	err := env.Parse(&e)
+	abortOn("Env config parsing error", err)
+	if e.LogLevel != "" {
+		di, err := strconv.ParseInt(e.LogLevel, 10, 8)
+		abortOn("WXSG_LOG (int) parse error", err)
+		debug = int(di)
+	}
+
 	logIf(0, desc,
 		"Version", version,
 		"Built-on", date,
@@ -60,7 +78,7 @@ func main() {
 	reloadStorage := openwechat.NewJsonFileHotReloadStorage("storage.json")
 
 	// 执行热登陆
-	err := bot.HotLogin(reloadStorage)
+	err = bot.HotLogin(reloadStorage)
 	abortOn("Can't start bot", err)
 
 	// 获取登陆的用户
@@ -71,8 +89,7 @@ func main() {
 	// 获取所有的群组
 	groups, err := self.Groups()
 	abortOn("Can't get groups", err)
-	logIf(0, "groups")
-	fmt.Println("\t", groups)
+	logIf(1, "groups", "list", fmt.Sprintf("%v", groups))
 
 	// 获取所有的好友(最新的好友)
 	friends, err := self.Friends(true)

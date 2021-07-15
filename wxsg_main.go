@@ -68,17 +68,16 @@ func main() {
 	abortOn("Can't get self", err)
 	logIf(0, "logged-on", "user", self)
 
-	// 获取所有的好友
-	friends, err := self.Friends()
-	abortOn("Can't get friends", err)
-	logIf(0, "friends")
-	fmt.Println("\t", friends)
-
 	// 获取所有的群组
 	groups, err := self.Groups()
 	abortOn("Can't get groups", err)
 	logIf(0, "groups")
 	fmt.Println("\t", groups)
+
+	// 获取所有的好友(最新的好友)
+	friends, err := self.Friends(true)
+	abortOn("Can't get friends", err)
+	logIf(3, "friends", "list", fmt.Sprintf("%v", friends))
 
 	// 阻塞主goroutine, 知道发生异常或者用户主动退出
 	bot.Block()

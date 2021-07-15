@@ -47,7 +47,12 @@ func main() {
 	// 注册消息处理函数
 	bot.MessageHandler = func(msg *openwechat.Message) {
 		if msg.IsText() {
-			fmt.Println("你收到了一条新的文本消息")
+			if msg.Content == "ping" {
+				msg.ReplyText("pong")
+				fmt.Println("回文本消息", msg.Content)
+			} else  {
+				fmt.Println("收到文本消息", msg.Content)
+			}
 		}
 	}
 

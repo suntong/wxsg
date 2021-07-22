@@ -20,7 +20,7 @@ for i in def_*/config; do
   source $i/config
 
   MODELS=$(expr $i : 'def_\(.*\)$')
-  MODELS=xo${MODELS}
+  MODELS=xo_${MODELS}
   
   mkdir -p $MODELS
   rm -f $MODELS/*.xo.go
